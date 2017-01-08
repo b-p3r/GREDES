@@ -7,7 +7,9 @@ import org.snmp4j.event.ResponseListener;
 
 public class ResponseThread extends Thread {
 	
+	@SuppressWarnings("unused")
 	private Monitor monitor;
+	@SuppressWarnings("unused")
 	private ResponseListener responseListener;
 	
 	ArrayList<TreeMap<Integer, Integer>> receivedList = new ArrayList<>();

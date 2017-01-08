@@ -40,6 +40,7 @@ public class RequestThread extends Thread {
 		}
 //
 		try {
+			@SuppressWarnings("unused")
 			List<List<String>> queryS = monitor.getAsStringBulk(query, 1, ifNumberInt);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

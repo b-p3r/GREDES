@@ -82,7 +82,7 @@ public class Monitor {
 		return list;
 	}
 
-	private PDU getPDUGet(OID oids[]) {
+	public PDU getPDUGet(OID oids[]) {
 		PDU pdu = new PDU();
 		for (OID oid : oids) {
 			pdu.add(new VariableBinding(oid));
@@ -92,7 +92,7 @@ public class Monitor {
 		return (PDU) pdu.clone();
 	}
 
-	private PDU getPDUGetBulk(OID oids[], int nonRepeaters, int maxRepetitions) {
+	public PDU getPDUGetBulk(OID oids[], int nonRepeaters, int maxRepetitions) {
 		PDU pdu = new PDU();
 		for (OID oid : oids) {
 			pdu.add(new VariableBinding(oid));
@@ -115,7 +115,7 @@ public class Monitor {
 		throw new RuntimeException("GET timed out");
 	}
 
-	private Target getTarget() {
+	public Target getTarget() {
 		Address targetAddress = GenericAddress.parse(address);
 		CommunityTarget target = new CommunityTarget();
 		target.setCommunity(new OctetString("public"));
@@ -125,5 +125,11 @@ public class Monitor {
 		target.setVersion(SnmpConstants.version2c);
 		return target;
 	}
+
+	public Snmp getSnmp() {
+		return this.snmp;
+	}
+	
+	
 
 }
