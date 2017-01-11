@@ -1,3 +1,4 @@
+package di.uminho.miei.gredes.presentationlayer.components;
 import javax.swing.JPanel;
 import java.awt.GridLayout;
 import javax.swing.JLabel;

@@ -1,3 +1,4 @@
+package di.uminho.miei.gredes.presentationlayer.components.chart;
 
 import java.awt.Color;
 import java.awt.event.WindowAdapter;

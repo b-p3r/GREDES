@@ -1,9 +1,12 @@
+package di.uminho.miei.gredes.businesslayer.threads;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.snmp4j.Snmp;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
+
+import di.uminho.miei.gredes.businesslayer.snmp.Monitor;
 
 public class ResponseThread extends Thread {
 	

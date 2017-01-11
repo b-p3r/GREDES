@@ -1,3 +1,4 @@
+package di.uminho.miei.gredes.presentationlayer.components;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;

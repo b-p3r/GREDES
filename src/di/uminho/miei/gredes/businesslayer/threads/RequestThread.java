@@ -1,8 +1,11 @@
+package di.uminho.miei.gredes.businesslayer.threads;
 import java.io.IOException;
 import java.util.List;
 
 import org.snmp4j.PDU;
 import org.snmp4j.smi.OID;
+
+import di.uminho.miei.gredes.businesslayer.snmp.Monitor;
 
 public class RequestThread extends Thread {
 	

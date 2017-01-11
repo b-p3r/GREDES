@@ -1,8 +1,11 @@
+package di.uminho.miei.gredes.main;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.JFrame;
+
+import di.uminho.miei.gredes.presentationlayer.components.IfTablePanel;
 
 public class MainWindow {
 

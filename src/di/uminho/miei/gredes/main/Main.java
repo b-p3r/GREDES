@@ -1,7 +1,10 @@
+package di.uminho.miei.gredes.main;
 import java.io.IOException;
 import java.util.List;
 
 import org.snmp4j.smi.OID;
+
+import di.uminho.miei.gredes.businesslayer.snmp.Monitor;
 
 public class Main {
 
