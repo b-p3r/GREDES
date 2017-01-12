@@ -20,7 +20,24 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
+import di.uminho.miei.gredes.presentationlayer.structures.IfRowInfo;
+import di.uminho.miei.gredes.presentationlayer.structures.IfTableInfo;
+
 public class Monitor {
+
+	private static final int totalColumns = 5;
+
+	private static final int sysUpTime = 0;
+
+	private static final int ifIndex = 1;
+
+	private static final int ifDescr = 2;
+
+	private static final int ifOpStatus = 3;
+
+	private static final int ifInOctets = 4;
+
+	private static final int ifOutOctets = 5;
 
 	private String address;
 
@@ -56,31 +73,40 @@ public class Monitor {
 		return event.getResponse().get(0).getVariable().toString();
 	}
 
-	public String getAsString(OID oid[]) throws IOException {
+	public Vector<? extends VariableBinding> getAsVar(OID oid[]) throws IOException {
 		ResponseEvent event = get(getPDUGet(oid));
-		return event.getResponse().get(0).getVariable().toString();
+		return event.getResponse().getVariableBindings();
 	}
 
-	public List<List<String>> getAsStringBulk(OID[] oid, int nonRepeaters, int maxRepetitions) throws IOException {
+	public IfTableInfo getAsStringBulk(OID[] oid, int nonRepeaters, int maxRepetitions) throws IOException {
 		ResponseEvent event = get(getPDUGetBulk(oid, nonRepeaters, maxRepetitions));
 
-		List<List<String>> list = new ArrayList<List<String>>();
-		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
-		List<String> head = new ArrayList<String>();
-		list.add(head);
-		head.add(var.get(0).getVariable().toString());
+		IfTableInfo ifTableInfo = new IfTableInfo();
+		ArrayList<IfRowInfo> tmp = new ArrayList<>();
 
-		for (int i = 1; i < (maxRepetitions * maxRepetitions) + 1;) {
-			List<String> strList = new ArrayList<String>();
-			list.add(strList);
-			for (int j = 0; j < maxRepetitions; j++, i++) {
-				Variable variable = var.get(i).getVariable();
-				strList.add(variable.toString());
-			}
+		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
+		ifTableInfo.setSysUptime(var.get(sysUpTime).getVariable().toLong());
+
+		for (int i = 1, j=0; j < (maxRepetitions * totalColumns);i++, j+=totalColumns) {
+
+			
+			int index = var.get(ifIndex+j).getVariable().toInt();
+			String descr = var.get(ifDescr+j).getVariable().toString();
+			int status = var.get(ifOpStatus+j).getVariable().toInt();
+			//int status = 0;
+			long inOctets = var.get(ifInOctets+j).getVariable().toLong();
+			long outOctets = var.get(ifOutOctets+j).getVariable().toLong();
+			IfRowInfo tmprow = new IfRowInfo(index, descr, status, inOctets, outOctets);
+			//System.out.println(tmprow.toString());
+			tmp.add(tmprow);
 
 		}
+		
+		
+		ifTableInfo.setIfList(tmp);
 
-		return list;
+		return ifTableInfo;
+
 	}
 
 	public PDU getPDUGet(OID oids[]) {
@@ -130,7 +156,5 @@ public class Monitor {
 	public Snmp getSnmp() {
 		return this.snmp;
 	}
-	
-	
 
 }

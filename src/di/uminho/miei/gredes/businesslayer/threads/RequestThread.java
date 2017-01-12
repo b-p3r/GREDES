@@ -6,6 +6,7 @@ import org.snmp4j.PDU;
 import org.snmp4j.smi.OID;
 
 import di.uminho.miei.gredes.businesslayer.snmp.Monitor;
+import di.uminho.miei.gredes.presentationlayer.structures.IfTableInfo;
 
 public class RequestThread extends Thread {
 	
@@ -44,7 +45,7 @@ public class RequestThread extends Thread {
 //
 		try {
 			@SuppressWarnings("unused")
-			List<List<String>> queryS = monitor.getAsStringBulk(query, 1, ifNumberInt);
+			IfTableInfo queryS = monitor.getAsStringBulk(query, 1, ifNumberInt);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
