@@ -2,7 +2,6 @@ package di.uminho.miei.gredes.businesslayer.snmp;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import org.snmp4j.CommunityTarget;
@@ -16,7 +15,6 @@ import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
@@ -25,19 +23,19 @@ import di.uminho.miei.gredes.presentationlayer.structures.IfTableInfo;
 
 public class Monitor {
 
-	private static final int totalColumns = 5;
+	private static final int TOTALCOLUMNS = 5;
 
-	private static final int sysUpTime = 0;
+	private static final int SYSUPTIME = 0;
 
-	private static final int ifIndex = 1;
+	private static final int IFINDEX = 1;
 
-	private static final int ifDescr = 2;
+	private static final int IFDESCR = 2;
 
-	private static final int ifOpStatus = 3;
+	private static final int IFOPSTATUS = 3;
 
-	private static final int ifInOctets = 4;
+	private static final int IFINOCTETS = 4;
 
-	private static final int ifOutOctets = 5;
+	private static final int IFOUTOCTETS = 5;
 
 	private String address;
 
@@ -85,24 +83,21 @@ public class Monitor {
 		ArrayList<IfRowInfo> tmp = new ArrayList<>();
 
 		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
-		ifTableInfo.setSysUptime(var.get(sysUpTime).getVariable().toLong());
+		ifTableInfo.setSysUptime(var.get(SYSUPTIME).getVariable().toLong());
 
-		for (int i = 1, j=0; j < (maxRepetitions * totalColumns);i++, j+=totalColumns) {
+		for (int j = 0; j < (maxRepetitions * TOTALCOLUMNS); j += TOTALCOLUMNS) {
 
-			
-			int index = var.get(ifIndex+j).getVariable().toInt();
-			String descr = var.get(ifDescr+j).getVariable().toString();
-			int status = var.get(ifOpStatus+j).getVariable().toInt();
-			//int status = 0;
-			long inOctets = var.get(ifInOctets+j).getVariable().toLong();
-			long outOctets = var.get(ifOutOctets+j).getVariable().toLong();
+			int index = var.get(IFINDEX + j).getVariable().toInt();
+			String descr = var.get(IFDESCR + j).getVariable().toString();
+			int status = var.get(IFOPSTATUS + j).getVariable().toInt();
+
+			long inOctets = var.get(IFINOCTETS + j).getVariable().toLong();
+			long outOctets = var.get(IFOUTOCTETS + j).getVariable().toLong();
 			IfRowInfo tmprow = new IfRowInfo(index, descr, status, inOctets, outOctets);
-			//System.out.println(tmprow.toString());
 			tmp.add(tmprow);
 
 		}
-		
-		
+
 		ifTableInfo.setIfList(tmp);
 
 		return ifTableInfo;
