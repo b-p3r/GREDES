@@ -3,7 +3,7 @@ package di.uminho.miei.gredes.presentationlayer.structures;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IfTableInfo {
+public class IfTableInfo implements Comparable<IfTableInfo> {
 
 	private long sysUptime;
 	private List<IfRowInfo> ifList;
@@ -52,6 +52,18 @@ public class IfTableInfo {
 		this.sysUptime = sysUptime;
 	}
 
+	public long getIfInOctetsFrom(int iface) {
+
+		return this.getIfList().get(iface).getIfInOctets();
+
+	}
+
+	public long getIfOutOctetsFrom(int iface) {
+
+		return this.getIfList().get(iface).getIfOutOctets();
+
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -59,6 +71,16 @@ public class IfTableInfo {
 		result = prime * result + ((ifList == null) ? 0 : ifList.hashCode());
 		result = prime * result + (int) (sysUptime ^ (sysUptime >>> 32));
 		return result;
+	}
+	
+	@Override
+	public int compareTo(IfTableInfo o) {
+		if (this.getSysUptime() > o.getSysUptime())
+			return 1;
+		else if (this.getSysUptime() < o.getSysUptime())
+			return -1;
+		else
+			return 0;
 	}
 
 	@Override
@@ -100,5 +122,7 @@ public class IfTableInfo {
 
 		return builder.toString();
 	}
+
+	
 
 }

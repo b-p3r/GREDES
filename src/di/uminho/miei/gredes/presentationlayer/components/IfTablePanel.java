@@ -4,12 +4,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
+import di.uminho.miei.gredes.presentationlayer.structures.IfRowInfo;
 import di.uminho.miei.gredes.presentationlayer.structures.IfTableInfo;
 
 public class IfTablePanel extends JPanel {
@@ -155,7 +157,7 @@ public class IfTablePanel extends JPanel {
 		return (IfRow) ((JPanel) this.getComponent(1)).getComponent(row);
 	}
 
-	public void setIfTableInfo(IfTableInfo queryS, long start) {
+	public void setIfTableInfo(IfTableInfo queryS, long start, List<IfRowInfo> list) {
 
 		int size = queryS.getIfList().size();
 		long sysUptime = queryS.getSysUptime();
@@ -166,9 +168,11 @@ public class IfTablePanel extends JPanel {
 			int status = queryS.getIfList().get(i).getIfOpStatus();
 			long inoctets = queryS.getIfList().get(i).getIfInOctets();
 			long outoctets = queryS.getIfList().get(i).getIfOutOctets();
-
-			getIfRow(i).updateRow(index, desc, status, (double) (sysUptime - start), (double) inoctets,
-					(double) outoctets);
+			//System.out.println(list.size());
+			if (list.size() > 0)
+				getIfRow(i).updateRow(index, desc, status, (double) (sysUptime - start),
+						(double) inoctets - list.get(i).getIfInOctets(),
+						(double) outoctets - list.get(i).getIfOutOctets());
 		}
 
 	}
