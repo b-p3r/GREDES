@@ -38,48 +38,48 @@ public class IfRowInfo {
 		this.ifOutOctets = ifRowInfo.getIfOutOctets();
 	}
 
-	public int getIfIndex() {
+	public synchronized int getIfIndex() {
 		return ifIndex;
 	}
 
-	public void setIfIndex(int ifIndex) {
+	public synchronized void setIfIndex(int ifIndex) {
 		this.ifIndex = ifIndex;
 	}
 
-	public String getIfDescr() {
+	public synchronized String getIfDescr() {
 		return ifDescr;
 	}
 
-	public void setIfDescr(String ifDescr) {
+	public synchronized void setIfDescr(String ifDescr) {
 		this.ifDescr = ifDescr;
 	}
 
-	public int getIfOpStatus() {
+	public synchronized int getIfOpStatus() {
 		return ifOpStatus;
 	}
 
-	public void setIfOpStatus(int ifOpStatus) {
+	public synchronized void setIfOpStatus(int ifOpStatus) {
 		this.ifOpStatus = ifOpStatus;
 	}
 
-	public long getIfInOctets() {
+	public synchronized long getIfInOctets() {
 		return ifInOctets;
 	}
 
-	public void setIfInOctets(long ifInOctets) {
+	public synchronized void setIfInOctets(long ifInOctets) {
 		this.ifInOctets = ifInOctets;
 	}
 
-	public long getIfOutOctets() {
+	public synchronized long getIfOutOctets() {
 		return ifOutOctets;
 	}
 
-	public void setIfOutOctets(long ifOutOctets) {
+	public synchronized void setIfOutOctets(long ifOutOctets) {
 		this.ifOutOctets = ifOutOctets;
 	}
 
 	@Override
-	public int hashCode() {
+	public synchronized int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((ifDescr == null) ? 0 : ifDescr.hashCode());
@@ -91,7 +91,7 @@ public class IfRowInfo {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public synchronized boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -122,7 +122,7 @@ public class IfRowInfo {
 	}
 
 	@Override
-	public String toString() {
+	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Index:     \t").append("" + this.getIfIndex()).append("\n");
 		sb.append("Descr:     \t").append(this.getIfDescr()).append("\n");

@@ -27,7 +27,7 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 		this.sysUptime = ifTableInfo.getSysUptime();
 	}
 
-	public List<IfRowInfo> getIfList() {
+	public synchronized List<IfRowInfo> getIfList() {
 		ArrayList<IfRowInfo> tmp = new ArrayList<>();
 
 		for (IfRowInfo ifRowInfo : this.ifList) {
@@ -36,7 +36,7 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 		return tmp;
 	}
 
-	public void setIfList(List<IfRowInfo> ifList) {
+	public synchronized void setIfList(List<IfRowInfo> ifList) {
 		this.ifList.clear();
 		for (IfRowInfo ifRowInfo : ifList) {
 			this.ifList.add(ifRowInfo.clone());
@@ -44,28 +44,28 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 
 	}
 
-	public long getSysUptime() {
+	public synchronized long getSysUptime() {
 		return sysUptime;
 	}
 
-	public void setSysUptime(long sysUptime) {
+	public synchronized void setSysUptime(long sysUptime) {
 		this.sysUptime = sysUptime;
 	}
 
-	public long getIfInOctetsFrom(int iface) {
+	public synchronized long getIfInOctetsFrom(int iface) {
 
 		return this.getIfList().get(iface).getIfInOctets();
 
 	}
 
-	public long getIfOutOctetsFrom(int iface) {
+	public synchronized long getIfOutOctetsFrom(int iface) {
 
 		return this.getIfList().get(iface).getIfOutOctets();
 
 	}
 
 	@Override
-	public int hashCode() {
+	public synchronized int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((ifList == null) ? 0 : ifList.hashCode());
@@ -74,7 +74,7 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 	}
 	
 	@Override
-	public int compareTo(IfTableInfo o) {
+	public synchronized int compareTo(IfTableInfo o) {
 		if (this.getSysUptime() > o.getSysUptime())
 			return 1;
 		else if (this.getSysUptime() < o.getSysUptime())
@@ -84,7 +84,7 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public synchronized boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -109,7 +109,7 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 	}
 
 	@Override
-	public String toString() {
+	public synchronized String toString() {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append("" + this.getSysUptime()).append("\n");
