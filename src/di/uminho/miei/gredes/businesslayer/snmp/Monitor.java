@@ -10,11 +10,13 @@ import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
@@ -78,6 +80,73 @@ public class Monitor {
 
 	public IfTableInfo getAsStringBulk(OID[] oid, int nonRepeaters, int maxRepetitions) throws IOException {
 		ResponseEvent event = get(getPDUGetBulk(oid, nonRepeaters, maxRepetitions));
+
+		IfTableInfo ifTableInfo = new IfTableInfo();
+		ArrayList<IfRowInfo> tmp = new ArrayList<>();
+
+		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
+		ifTableInfo.setSysUptime(var.get(SYSUPTIME).getVariable().toLong());
+
+		for (int j = 0; j < (maxRepetitions * TOTALCOLUMNS); j += TOTALCOLUMNS) {
+
+			int index = var.get(IFINDEX + j).getVariable().toInt();
+			String descr = var.get(IFDESCR + j).getVariable().toString();
+			int status = var.get(IFOPSTATUS + j).getVariable().toInt();
+
+			long inOctets = var.get(IFINOCTETS + j).getVariable().toLong();
+			long outOctets = var.get(IFOUTOCTETS + j).getVariable().toLong();
+			IfRowInfo tmprow = new IfRowInfo(index, descr, status, inOctets, outOctets);
+			tmp.add(tmprow);
+
+		}
+
+		ifTableInfo.setIfList(tmp);
+
+		return ifTableInfo;
+	}
+
+	public void sendBulkAssynchronous(OID[] oid, int nonRepeaters, int maxRepetitions, ResponseListener listener)
+			throws IOException {
+
+		snmp.send(getPDUGetBulk(oid, nonRepeaters, maxRepetitions), getTarget(), null, listener);
+
+	}
+
+	public long calcMaxPoll(long initialSysTime) throws IOException, InterruptedException {
+		OID queryPoll[] = { new OID(".1.3.6.1.2.1.1.3.0"), new OID(".1.3.6.1.2.1.2.2.1.10.1") };
+
+		long previouSysUpTime = initialSysTime;
+		long previouIfInOctets = 0;
+		long maxInterval = 0;
+
+		for (int i = 0; i < 50; i++) {
+
+			Thread.sleep(200);
+
+			Vector<? extends VariableBinding> queryRes = getAsVar(queryPoll);
+
+			long sysuptime = queryRes.get(0).getVariable().toLong();
+
+			long ifLocalHostInOctets = queryRes.get(1).getVariable().toLong();
+
+			if (previouIfInOctets != ifLocalHostInOctets) {
+
+				if ((sysuptime - previouSysUpTime) > maxInterval) {
+					maxInterval = (sysuptime - previouSysUpTime);
+
+				}
+				previouIfInOctets = ifLocalHostInOctets;
+				previouSysUpTime = sysuptime;
+
+			}
+
+		}
+
+		return new TimeTicks(maxInterval).toMilliseconds();
+	}
+
+	public IfTableInfo getAsTableBulkAssynchronous(OID[] oid, int nonRepeaters, int maxRepetitions,
+			ResponseEvent event) {
 
 		IfTableInfo ifTableInfo = new IfTableInfo();
 		ArrayList<IfRowInfo> tmp = new ArrayList<>();
