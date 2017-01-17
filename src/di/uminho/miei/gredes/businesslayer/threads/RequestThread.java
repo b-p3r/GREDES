@@ -1,50 +1,46 @@
 package di.uminho.miei.gredes.businesslayer.threads;
-import java.util.ArrayList;
-import java.util.TreeMap;
 
-import org.snmp4j.Snmp;
-import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.event.ResponseListener;
+import java.io.IOException;
+
+import org.snmp4j.smi.OID;
 
 import di.uminho.miei.gredes.businesslayer.snmp.Monitor;
 
-public class ResponseThread extends Thread {
-	
-	@SuppressWarnings("unused")
-	private Monitor monitor;
-	@SuppressWarnings("unused")
-	private ResponseListener responseListener;
-	
-	ArrayList<TreeMap<Integer, Integer>> receivedList = new ArrayList<>();
+public class RequestThread extends Thread {
 
-	public ResponseThread(Monitor monitor) {
+	private Monitor monitor;
+
+	private int ifNumberInt;
+
+	public RequestThread(Monitor monitor, int ifNumberInt) {
 		super();
 		this.monitor = monitor;
+		this.ifNumberInt = ifNumberInt;
 	}
 
 	@Override
 	public void run() {
-		
-		
+
+		OID sysUptime = new OID(".1.3.6.1.2.1.1.3");
+
+		OID ifIndex = new OID(".1.3.6.1.2.1.2.2.1.1");
+		OID ifDescr = new OID(".1.3.6.1.2.1.2.2.1.2");
+		OID ifOpStatus = new OID(".1.3.6.1.2.1.2.2.1.8");
+		OID ifInOctets = new OID(".1.3.6.1.2.1.2.2.1.10");
+		OID ifOutOctets = new OID(".1.3.6.1.2.1.2.2.1.16");
+
+		OID query[] = { sysUptime, ifIndex, ifDescr, ifOpStatus, ifInOctets, ifOutOctets };
+
 		while (true) {
-			
-			responseListener = new ResponseListener() {
-				
-				@Override
-				public void onResponse(ResponseEvent event) {
-					((Snmp)event.getSource()).cancel(event.getRequest(), this);
-				       System.out.println("Received response PDU is: "+event.getResponse());
-					
-				}
-			};
-			
-			
-			
-			
-			
+
+			try {
+				monitor.sendBulkAssynchronous(query, 1, ifNumberInt, null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
-	
-	
 
 }
