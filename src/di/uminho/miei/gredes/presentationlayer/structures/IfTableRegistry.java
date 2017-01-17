@@ -1,18 +1,28 @@
 package di.uminho.miei.gredes.presentationlayer.structures;
 
-import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class IfTableRegistry {
 
-	private Set<IfTableInfo> registry;
+	private int Maxsize = 1000;
+	Lock qLock;
+	Condition notEmpty;
+	Condition notFull;
+
+	private TreeSet<IfTableInfo> registry;
 
 	public IfTableRegistry() {
 		super();
 		this.registry = new TreeSet<>();
+		qLock = new ReentrantLock();
+		notEmpty = qLock.newCondition();
+		notFull = qLock.newCondition();
 	}
 
-	public IfTableRegistry(Set<IfTableInfo> registry) {
+	public IfTableRegistry(TreeSet<IfTableInfo> registry) {
 		super();
 		this.registry = new TreeSet<>();
 		this.setRegistry(registry);
@@ -23,64 +33,203 @@ public class IfTableRegistry {
 		this.registry = ifRegistry.getRegistry();
 	}
 
-	public synchronized Set<IfTableInfo> getRegistry() {
+	public TreeSet<IfTableInfo> getRegistry() {
+
+		qLock.lock();
 		TreeSet<IfTableInfo> tmp = new TreeSet<>();
+		try {
+			for (IfTableInfo ifTableInfo : this.registry) {
+				tmp.add(ifTableInfo.clone());
 
-		for (IfTableInfo ifTableInfo : this.registry) {
-			tmp.add(ifTableInfo.clone());
-
+			}
+		} finally {
+			qLock.unlock();
 		}
 
 		return tmp;
 	}
-	
-	
-	
 
-	public synchronized int size() {
-		return registry.size();
+	public int size() {
+		qLock.lock();
+		int size = 0;
+		try {
+			size = registry.size();
+		} finally {
+			qLock.unlock();
+		}
+		return size;
 	}
 
-	public synchronized boolean isEmpty() {
-		return registry.isEmpty();
+	public boolean isEmpty() {
+		qLock.lock();
+		boolean isEmpty = false;
+		try {
+			isEmpty = registry.isEmpty();
+		} finally {
+			qLock.unlock();
+		}
+		return isEmpty;
 	}
 
-	public synchronized boolean contains(Object o) {
-		return registry.contains(o);
+	public boolean contains(Object o) {
+		qLock.lock();
+		boolean exists = false;
+		try {
+
+			exists = registry.contains(o);
+		} finally {
+			qLock.unlock();
+		}
+		return exists;
 	}
 
-	public synchronized void add(IfTableInfo e) {
-		registry.add(e);
+	public void add(IfTableInfo e) throws InterruptedException {
+		qLock.lock();
+		try {
+
+			while (this.registry.size() == Maxsize)
+				notEmpty.await();
+
+			registry.add(e.clone());
+			notEmpty.signal();
+		} finally {
+			qLock.unlock();
+		}
+
 	}
 
-	public synchronized void remove(Object o) {
-		registry.remove(o);
+	public void remove(Object o) throws InterruptedException {
+		qLock.lock();
+
+		try {
+
+			while (this.registry.isEmpty())
+				notFull.await();
+
+			registry.remove(o);
+
+			notFull.signal();
+		} finally {
+			qLock.unlock();
+		}
+
 	}
 
-	public synchronized void clear() {
-		registry.clear();
+	public void clear() {
+		qLock.lock();
+		try {
+			registry.clear();
+		} finally
+
+		{
+			qLock.unlock();
+		}
 	}
 
-	public synchronized void setRegistry(Set<IfTableInfo> registry) {
+	public IfTableInfo first() throws InterruptedException {
+		qLock.lock();
 
-		this.registry.clear();
-		for (IfTableInfo ifTableInfo : registry) {
-			this.registry.add(ifTableInfo.clone());
+		IfTableInfo ifTableInfo = null;
 
+		try {
+			
+
+				while (this.registry.isEmpty())
+					notFull.await();
+			ifTableInfo = registry.first();
+		} finally {
+			qLock.unlock();
+		}
+		return ifTableInfo;
+
+	}
+
+	public IfTableInfo last() throws InterruptedException {
+		qLock.lock();
+
+		IfTableInfo ifTableInfo = null;
+
+		try {
+
+			while (this.registry.isEmpty())
+				notFull.await();
+			ifTableInfo = registry.last();
+		} finally {
+			qLock.unlock();
+		}
+
+		return ifTableInfo;
+
+	}
+
+	public IfTableInfo pollFirst() throws InterruptedException {
+		qLock.lock();
+
+		IfTableInfo ifTableInfo = null;
+
+		try {
+
+			while (this.registry.isEmpty())
+				notFull.await();
+			ifTableInfo = registry.pollFirst();
+
+			notFull.signal();
+		} finally {
+			qLock.unlock();
+		}
+		return ifTableInfo;
+	}
+
+	public IfTableInfo pollLast() throws InterruptedException {
+		qLock.lock();
+
+		IfTableInfo ifTableInfo = null;
+
+		try {
+
+			while (this.registry.isEmpty())
+				notFull.await();
+			ifTableInfo = registry.pollLast();
+
+			notFull.signal();
+		} finally {
+			qLock.unlock();
+		}
+		return ifTableInfo;
+
+	}
+
+	public void setRegistry(TreeSet<IfTableInfo> registry) {
+
+		qLock.lock();
+		try {
+
+			this.registry.clear();
+			for (IfTableInfo ifTableInfo : registry) {
+				this.registry.add(ifTableInfo.clone());
+
+			}
+		} finally {
+			qLock.unlock();
 		}
 
 	}
 
 	@Override
-	public synchronized int hashCode() {
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((registry == null) ? 0 : registry.hashCode());
+		qLock.lock();
+		try {
+			result = prime * result + ((registry == null) ? 0 : registry.hashCode());
+		} finally {
+			qLock.unlock();
+		}
 		return result;
 	}
 
 	@Override
-	public synchronized boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -97,17 +246,22 @@ public class IfTableRegistry {
 	}
 
 	@Override
-	public synchronized IfTableRegistry clone() {
+	public IfTableRegistry clone() {
 
 		return new IfTableRegistry(this);
 	}
 
 	@Override
-	public synchronized String toString() {
+	public String toString() {
+		qLock.lock();
 		StringBuilder builder = new StringBuilder();
+		try {
 
-		for (IfTableInfo ifTableInfo : this.registry) {
-			builder.append(ifTableInfo.toString());
+			for (IfTableInfo ifTableInfo : this.registry) {
+				builder.append(ifTableInfo.toString());
+			}
+		} finally {
+			qLock.unlock();
 		}
 
 		return builder.toString();
