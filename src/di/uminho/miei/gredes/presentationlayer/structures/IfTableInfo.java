@@ -10,36 +10,44 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 
 	public IfTableInfo() {
 		super();
-		this.ifList = new ArrayList<>();
-		this.sysUptime = 0;
+		this.setIfList(new ArrayList<>());
+		this.setSysUptime(0);
 	}
 
 	public IfTableInfo(long sysUpTime, List<IfRowInfo> ifList) {
 		super();
-		this.sysUptime = sysUpTime;
-		this.ifList = ifList;
+		this.setSysUptime(sysUpTime);
+		this.setIfList(ifList);
 
 	}
 
 	public IfTableInfo(IfTableInfo ifTableInfo) {
 		super();
-		this.ifList = ifTableInfo.getIfList();
-		this.sysUptime = ifTableInfo.getSysUptime();
+		synchronized (ifList) {
+			this.ifList = ifTableInfo.getIfList();
+			this.sysUptime = ifTableInfo.getSysUptime();
+		}
+
 	}
 
-	public synchronized List<IfRowInfo> getIfList() {
+	public List<IfRowInfo> getIfList() {
 		ArrayList<IfRowInfo> tmp = new ArrayList<>();
 
-		for (IfRowInfo ifRowInfo : this.ifList) {
-			tmp.add(ifRowInfo.clone());
+		synchronized (this.ifList) {
+			for (IfRowInfo ifRowInfo : this.ifList) {
+				tmp.add(ifRowInfo.clone());
+			}
 		}
+
 		return tmp;
 	}
 
-	public synchronized void setIfList(List<IfRowInfo> ifList) {
-		this.ifList.clear();
-		for (IfRowInfo ifRowInfo : ifList) {
-			this.ifList.add(ifRowInfo.clone());
+	public void setIfList(List<IfRowInfo> ifList) {
+		synchronized (this.ifList) {
+			this.ifList.clear();
+			for (IfRowInfo ifRowInfo : ifList) {
+				this.ifList.add(ifRowInfo.clone());
+			}
 		}
 
 	}
@@ -52,29 +60,32 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 		this.sysUptime = sysUptime;
 	}
 
-	public synchronized long getIfInOctetsFrom(int iface) {
+	public long getIfInOctetsFrom(int iface) {
 
 		return this.getIfList().get(iface).getIfInOctets();
 
 	}
 
-	public synchronized long getIfOutOctetsFrom(int iface) {
+	public long getIfOutOctetsFrom(int iface) {
 
 		return this.getIfList().get(iface).getIfOutOctets();
 
 	}
 
 	@Override
-	public synchronized int hashCode() {
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((ifList == null) ? 0 : ifList.hashCode());
-		result = prime * result + (int) (sysUptime ^ (sysUptime >>> 32));
+		synchronized (this.ifList) {
+			result = prime * result + ((ifList == null) ? 0 : ifList.hashCode());
+			result = prime * result + (int) (sysUptime ^ (sysUptime >>> 32));
+		}
+
 		return result;
 	}
-	
+
 	@Override
-	public synchronized int compareTo(IfTableInfo o) {
+	public int compareTo(IfTableInfo o) {
 		if (this.getSysUptime() > o.getSysUptime())
 			return 1;
 		else if (this.getSysUptime() < o.getSysUptime())
@@ -85,21 +96,25 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 
 	@Override
 	public synchronized boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		IfTableInfo other = (IfTableInfo) obj;
-		if (ifList == null) {
-			if (other.ifList != null)
-				return false;
-		} else if (!ifList.equals(other.getIfList()))
-			return false;
-		if (sysUptime != other.getSysUptime())
-			return false;
-		return true;
+		boolean eq = true;
+		synchronized (this.ifList) {
+			if (this == obj)
+				eq = true;
+			if (obj == null)
+				eq = false;
+			if (getClass() != obj.getClass())
+				eq = false;
+			IfTableInfo other = (IfTableInfo) obj;
+			if (ifList == null) {
+				if (other.ifList != null)
+					eq = false;
+			} else if (!ifList.equals(other.getIfList()))
+				eq = false;
+			if (sysUptime != other.getSysUptime())
+				eq = false;
+		}
+
+		return eq;
 	}
 
 	@Override
@@ -109,20 +124,22 @@ public class IfTableInfo implements Comparable<IfTableInfo> {
 	}
 
 	@Override
-	public synchronized String toString() {
+	public String toString() {
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("" + this.getSysUptime()).append("\n");
-		builder.append("..........................\n");
+		synchronized (this.ifList) {
 
-		for (IfRowInfo ifRowInfo : this.ifList) {
-			builder.append(ifRowInfo.toString());
+			builder.append("" + this.getSysUptime()).append("\n");
+			builder.append("..........................\n");
+
+			for (IfRowInfo ifRowInfo : this.ifList) {
+				builder.append(ifRowInfo.toString());
+			}
+			builder.append("..........................\n");
+
 		}
-		builder.append("..........................\n");
 
 		return builder.toString();
 	}
-
-	
 
 }

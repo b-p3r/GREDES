@@ -116,7 +116,7 @@ public class IfRowInfo {
 	}
 
 	@Override
-	public IfRowInfo clone() {
+	public synchronized IfRowInfo clone() {
 
 		return new IfRowInfo(this);
 	}
