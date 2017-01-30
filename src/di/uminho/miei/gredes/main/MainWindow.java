@@ -65,6 +65,7 @@ public class MainWindow {
 
 					managerHelper.numberInterfacesPolling();
 
+					//TODO: Adiciona código para cálculo do tempo de polling
 					Thread.sleep(10000);
 
 				} catch (Exception e) {
