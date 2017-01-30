@@ -300,8 +300,7 @@ public class IfTablePanel extends JPanel {
 			int status = queryS.getIfList().get(i).getIfOpStatus();
 			long inoctets = queryS.getIfList().get(i).getIfInOctets();
 			long outoctets = queryS.getIfList().get(i).getIfOutOctets();
-			// System.out.println(list.size());
-			if (list.size() > 0)
+			if (list.size() > 1)
 				getIfRow(i).updateRow(index, desc, status, (double) (sysUptime - start),
 						(double) inoctets - list.get(i).getIfInOctets(),
 						(double) outoctets - list.get(i).getIfOutOctets());
