@@ -25,41 +25,7 @@ unpredictableMIB MODULE-IDENTITY
 	::= { experimental 99 }
 
 
-indexRandHexNumber OBJECT-TYPE
-	SYNTAX  INTEGER (1..1000)
-	MAX-ACCESS read-only
-	STATUS  current
-	DESCRIPTION
-		"Index for the entry of the random hexadecimal number of the table"
-	-- 1.3.6.1.3.99.1.7.1.1
-	::= { randomTableEntry 1 }
 
-
-randomHexadecimalNumber OBJECT-TYPE
-	SYNTAX  DisplayString
-	MAX-ACCESS read-write
-	STATUS  current
-	DESCRIPTION
-		"Sequence of D hexadecimal digits."
-	-- 1.3.6.1.3.99.1.7.1.2
-	::= { randomTableEntry 2 }
-
-
-randomTableEntry OBJECT-TYPE
-	SYNTAX  RandomTableEntry
-	MAX-ACCESS not-accessible
-	STATUS  current
-	DESCRIPTION
-		"An entry for the information about a specific random hexadecimal digit"
-	INDEX {
-		indexRandHexNumber }
-	::= { randomTable 1 }
-
-
-RandomTableEntry ::= SEQUENCE {
-
-	indexRandHexNumber      INTEGER,
-	randomHexadecimalNumber DisplayString }
 
 
 unpredictableTable OBJECT-GROUP
@@ -92,7 +58,7 @@ paramR OBJECT-TYPE
 	DESCRIPTION
 		"Frequency R of refreshing the table of random numbers (in Hz);"
 	-- 1.3.6.1.3.99.1.3
-	::= { unpredictableMIB 3 }
+	::= { unpredictableParam 1 }
 
 
 paramN OBJECT-TYPE
@@ -102,7 +68,7 @@ paramN OBJECT-TYPE
 	DESCRIPTION
 		"N number of entries in the random number table;"
 	-- 1.3.6.1.3.99.4
-	::= { unpredictableMIB 4 }
+	::= { unpredictableParam 2 }
 
 
 paramD OBJECT-TYPE
@@ -112,7 +78,7 @@ paramD OBJECT-TYPE
 	DESCRIPTION
 		"Number of D hexadecimal digits of each entry in the random number table;"
 	-- 1.3.6.1.3.99.5
-	::= { unpredictableMIB 5 }
+	::= { unpredictableParam 3 }
 
 
 paramAuthReset OBJECT-TYPE
@@ -122,7 +88,7 @@ paramAuthReset OBJECT-TYPE
 	DESCRIPTION
 		"Authorizations for the agent reset operation."
 	-- 1.3.6.1.3.99.6
-	::= { unpredictableMIB 6 }
+	::= { unpredictableParam 4 }
 
 
 randomTable OBJECT-TYPE
@@ -132,7 +98,46 @@ randomTable OBJECT-TYPE
 	DESCRIPTION
 		"This is the table used for storage of random sequence of hexadecimal digits"
 	-- 1.3.6.1.3.99.7
-	::= { unpredictableMIB 7 }
+	::= { unpredictableTable 1 }
+
+randomTableEntry OBJECT-TYPE
+	SYNTAX  RandomTableEntry
+	MAX-ACCESS not-accessible
+	STATUS  current
+	DESCRIPTION
+		"An entry for the information about a specific random hexadecimal digit"
+	INDEX {
+		indexRandHexNumber }
+	::= { randomTable 1 }
+
+
+RandomTableEntry ::= SEQUENCE {
+
+	indexRandHexNumber      INTEGER,
+	randomHexadecimalNumber DisplayString }
+
+
+
+indexRandHexNumber OBJECT-TYPE
+	SYNTAX  INTEGER (1..1000)
+	MAX-ACCESS read-only
+	STATUS  current
+	DESCRIPTION
+		"Index for the entry of the random hexadecimal number of the table"
+	-- 1.3.6.1.3.99.1.7.1.1
+	::= { randomTableEntry 1 }
+
+
+randomHexadecimalNumber OBJECT-TYPE
+	SYNTAX  DisplayString
+	MAX-ACCESS read-write
+	STATUS  current
+	DESCRIPTION
+		"Sequence of D hexadecimal digits."
+	-- 1.3.6.1.3.99.1.7.1.2
+	::= { randomTableEntry 2 }
+
+
 
 
 END
