@@ -5,12 +5,17 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class IfTableRegistry {
 
 	private int Maxsize = 1000;
-	Lock qLock;
-	Condition notEmpty;
-	Condition notFull;
+	private Lock qLock;
+	private Condition notEmpty;
+	private Condition notFull;
 
 	private TreeSet<IfTableInfo> registry;
 
@@ -34,9 +39,9 @@ public class IfTableRegistry {
 	}
 
 	public TreeSet<IfTableInfo> getRegistry() {
-
-		qLock.lock();
 		TreeSet<IfTableInfo> tmp = new TreeSet<>();
+		qLock.lock();
+
 		try {
 			for (IfTableInfo ifTableInfo : this.registry) {
 				tmp.add(ifTableInfo.clone());
@@ -61,8 +66,9 @@ public class IfTableRegistry {
 	}
 
 	public boolean isEmpty() {
-		qLock.lock();
 		boolean isEmpty = false;
+		qLock.lock();
+
 		try {
 			isEmpty = registry.isEmpty();
 		} finally {
@@ -72,8 +78,9 @@ public class IfTableRegistry {
 	}
 
 	public boolean contains(Object o) {
-		qLock.lock();
 		boolean exists = false;
+		qLock.lock();
+
 		try {
 
 			exists = registry.contains(o);
@@ -127,15 +134,13 @@ public class IfTableRegistry {
 	}
 
 	public IfTableInfo first() throws InterruptedException {
-		qLock.lock();
 
 		IfTableInfo ifTableInfo = null;
-
+		qLock.lock();
 		try {
-			
 
-				while (this.registry.isEmpty())
-					notFull.await();
+			while (this.registry.isEmpty())
+				notFull.await();
 			ifTableInfo = registry.first();
 		} finally {
 			qLock.unlock();
