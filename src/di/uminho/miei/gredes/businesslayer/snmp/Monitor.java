@@ -111,47 +111,17 @@ public class Monitor {
 
 	}
 
-	// public long calcMaxPoll(long initialSysTime) throws IOException,
-	// InterruptedException {
-	// OID queryPoll[] = { new OID(".1.3.6.1.2.1.1.3.0"), new
-	// OID(".1.3.6.1.2.1.2.2.1.10.1") };
-	//
-	// long previouSysUpTime = initialSysTime;
-	// long previouIfInOctets = 0;
-	// long maxInterval = 0;
-	//
-	// for (int i = 0; i < 50; i++) {
-	//
-	// Thread.sleep(200);
-	//
-	// Vector<? extends VariableBinding> queryRes = getAsVar(queryPoll);
-	//
-	// long sysuptime = queryRes.get(0).getVariable().toLong();
-	//
-	// long ifLocalHostInOctets = queryRes.get(1).getVariable().toLong();
-	//
-	// if (previouIfInOctets != ifLocalHostInOctets) {
-	//
-	// if ((sysuptime - previouSysUpTime) > maxInterval) {
-	// maxInterval = (sysuptime - previouSysUpTime);
-	//
-	// }
-	// previouIfInOctets = ifLocalHostInOctets;
-	// previouSysUpTime = sysuptime;
-	//
-	// }
-	//
-	// }
-	//
-	// return new TimeTicks(maxInterval).toMilliseconds();
-	// }
+	
 
 	public IfTableInfo getAsTableBulkAssynchronous(int nonRepeaters, int maxRepetitions, ResponseEvent event) {
 
 		IfTableInfo ifTableInfo = new IfTableInfo();
 		ArrayList<IfRowInfo> tmp = new ArrayList<>();
+		
+		
 
 		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
+		System.out.println("EVENT :" + event);
 		ifTableInfo.setSysUptime(var.get(SYSUPTIME).getVariable().toLong());
 
 		for (int j = 0; j < (maxRepetitions * TOTALCOLUMNS); j += TOTALCOLUMNS) {
