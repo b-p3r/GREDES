@@ -3,6 +3,11 @@ package di.uminho.miei.gredes.presentationlayer.structures;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class IfTableInfo implements Comparable<IfTableInfo> {
 
 	private long sysUptime;

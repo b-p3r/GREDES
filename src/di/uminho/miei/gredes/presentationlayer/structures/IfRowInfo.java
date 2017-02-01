@@ -1,5 +1,10 @@
 package di.uminho.miei.gredes.presentationlayer.structures;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class IfRowInfo {
 
 	private int ifIndex;
