@@ -6,24 +6,38 @@ import java.util.Vector;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.smi.OID;
+import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.VariableBinding;
 
 import di.uminho.miei.gredes.businesslayer.snmp.Monitor;
 import di.uminho.miei.gredes.presentationlayer.structures.IfTableInfo;
 import di.uminho.miei.gredes.presentationlayer.structures.IfTableRegistry;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class ManagerHelper {
 
 	/**
 	 * 
 	 */
 	private Monitor monitor;
-	private long start;
-	private int ifNumberInt;
+	
+	
+	private long initialTime;
+	private long polltime;
+
+	private int interfacesTotalNumber;
+	
+	
 	private OID bulkOIDs[];
 	private OID[] ifNumOIDs;
+	
+	
 	private IfTableRegistry registry;
-
+	
 	/**
 	 * 
 	 * @param address
@@ -31,8 +45,8 @@ public class ManagerHelper {
 	public ManagerHelper(String address) {
 		super();
 		this.monitor = new Monitor(address);
-		this.start = 0;
-		this.ifNumberInt = 0;
+		this.initialTime = 0;
+		this.interfacesTotalNumber = 0;
 		this.bulkOIDs = new OID[6];
 		this.ifNumOIDs = new OID[2];
 		registry = new IfTableRegistry();
@@ -66,9 +80,6 @@ public class ManagerHelper {
 
 		System.arraycopy(tmpOIDS, 0, bulkOIDs, 0, tmpOIDS.length);
 
-
-		
-
 	}
 
 	/**
@@ -76,14 +87,12 @@ public class ManagerHelper {
 	 * @throws IOException
 	 */
 	public void numberInterfacesPolling() throws IOException {
-		
-		System.out.println("ifNumOIDs\n" + ifNumOIDs[0] +" "+ifNumOIDs[1]);
-		
+
 		Vector<? extends VariableBinding> queryIfNumVar = monitor.getAsVarSynchronous(ifNumOIDs);
 
-		setStart(queryIfNumVar.get(0).getVariable().toLong());
+		setInitialTime(queryIfNumVar.get(0).getVariable().toLong());
 
-		setIfNumberInt(queryIfNumVar.get(1).getVariable().toInt());
+		setInterfacesTotalNumber(queryIfNumVar.get(1).getVariable().toInt());
 
 	}
 
@@ -94,7 +103,7 @@ public class ManagerHelper {
 	 */
 	public void bulkOctectsPollingRequest(ResponseListener responseListener) throws IOException {
 
-		monitor.sendBulkAssynchronous(bulkOIDs, 1, ifNumberInt, responseListener);
+		monitor.sendBulkAssynchronous(bulkOIDs, 1, interfacesTotalNumber, responseListener);
 
 	}
 
@@ -106,14 +115,44 @@ public class ManagerHelper {
 	 */
 	public void bulkOctectsPollingResponse(ResponseEvent event) throws IOException, InterruptedException {
 
-		IfTableInfo table = monitor.getAsTableBulkAssynchronous(1, 5, event);
+		IfTableInfo table = monitor.getAsTableBulkAssynchronous(1, this.interfacesTotalNumber, event);
 		System.out.println("Received response PDU is: " + table.toString());
 
 		registry.add(table.clone());
 
 	}
-	
-	
+
+	public void calcMaxPoll() throws IOException, InterruptedException {
+		OID queryPoll[] = { new OID(".1.3.6.1.2.1.1.3.0") };
+
+		long previouSysUpTime = this.initialTime;
+		long maxInterval = 0;
+
+		for (int i = 0; i < 5; i++) {
+
+			Thread.sleep(3000);
+
+			Vector<? extends VariableBinding> queryRes = monitor.getAsVarSynchronous(queryPoll);
+
+			long sysuptime = queryRes.get(0).getVariable().toLong();
+			
+
+			if (previouSysUpTime != sysuptime) {
+
+			if ((sysuptime - previouSysUpTime) > maxInterval) {
+				maxInterval = (sysuptime - previouSysUpTime);
+
+			}
+			
+			
+			previouSysUpTime = sysuptime;
+
+		}
+
+		 }
+
+		 setPolltime(new TimeTicks(maxInterval).toMilliseconds());
+	}
 
 	/**
 	 * 
@@ -151,31 +190,53 @@ public class ManagerHelper {
 	 * 
 	 * @return
 	 */
-	public int getIfNumberInt() {
-		return ifNumberInt;
+	public int getInterfacesTotalNumber() {
+		return this.interfacesTotalNumber;
 	}
 
 	/**
 	 * 
-	 * @param ifNumberInt
+	 * @param interfacesTotalNumber
 	 */
-	public void setIfNumberInt(int ifNumberInt) {
-		this.ifNumberInt = ifNumberInt;
+	public void setInterfacesTotalNumber(int interfacesTotalNumber) {
+		this.interfacesTotalNumber = interfacesTotalNumber;
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	public long getStart() {
-		return start;
+	public long getInitialTime() {
+		return this.initialTime;
 	}
 
 	/**
 	 * 
+	 * @param start
 	 */
-	public void setStart(long start) {
-		this.start = start;
+	public void setInitialTime(long initialTime) {
+		this.initialTime = initialTime;
 	}
+
+	/**
+	 * @return the polltime
+	 */
+	public long getPolltime() {
+		return this.polltime;
+	}
+
+	/**
+	 * @param polltime the polltime to set
+	 */
+	public void setPolltime(long polltime) {
+		this.polltime = polltime;
+	}
+	
+	
+	public void stop() throws IOException {
+		this.monitor.stop();
+
+	}
+	
 
 }
