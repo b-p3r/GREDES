@@ -12,6 +12,11 @@ import javax.swing.SwingConstants;
 
 import di.uminho.miei.gredes.presentationlayer.components.chart.Chart;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class IfRow extends JPanel {
 
 	
@@ -86,6 +91,7 @@ public class IfRow extends JPanel {
 		labelStatus.setHorizontalAlignment(SwingConstants.CENTER);
 
 		scrollPane_1 = new JScrollPane();
+		
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
 		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_1.insets = new Insets(0, 0, 0, 5);
@@ -96,7 +102,6 @@ public class IfRow extends JPanel {
 		chartInOctects = new Chart(numPointsShowing);
 		scrollPane_1.setViewportView(chartInOctects);
 		chartInOctects.setLayout(new GridLayout(1, 0, 0, 0));
-		// chartInOctects.addPoint(0.0, 0.0);
 
 		scrollPane_2 = new JScrollPane();
 		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
@@ -105,11 +110,21 @@ public class IfRow extends JPanel {
 		gbc_scrollPane_2.gridy = 0;
 		add(scrollPane_2, gbc_scrollPane_2);
 		chartOutOctects = new Chart(numPointsShowing);
+		
 		scrollPane_2.setViewportView(chartOutOctects);
 		chartOutOctects.setLayout(new GridLayout(1, 0, 0, 0));
 
 	}
 
+	/**
+	 * 
+	 * @param index
+	 * @param name
+	 * @param status
+	 * @param sysUptime
+	 * @param inoctets
+	 * @param outoctets
+	 */
 	public void updateRow(int index, String name, int status, double sysUptime, double inoctets, double outoctets) {
 		
 		chartOutOctects.addPoint(sysUptime, outoctets);
@@ -120,26 +135,50 @@ public class IfRow extends JPanel {
 
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Chart getChartInOctects() {
 		return chartInOctects;
 	}
 
+	/**
+	 * 
+	 * @param chartInOctects
+	 */
 	public void setChartInOctects(Chart chartInOctects) {
 		this.chartInOctects = chartInOctects;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Chart getChartOutOctects() {
 		return chartOutOctects;
 	}
 
+	/**
+	 * 
+	 * @param chartOutOctects
+	 */
 	public void setChartOutOctects(Chart chartOutOctects) {
 		this.chartOutOctects = chartOutOctects;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getNumPointsShowing() {
 		return numPointsShowing;
 	}
 
+	/**
+	 * 
+	 * @param numPointsShowing
+	 */
 	public void setNumPointsShowing(int numPointsShowing) {
 		this.numPointsShowing = numPointsShowing;
 	}

@@ -4,6 +4,11 @@ import java.util.Comparator;
 
 import info.monitorenter.gui.chart.TracePoint2D;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class TracePoint2DComparator implements Comparator<TracePoint2D> {
 
 	@Override

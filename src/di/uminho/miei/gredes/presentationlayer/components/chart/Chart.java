@@ -8,6 +8,11 @@ import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.TracePoint2D;
 import info.monitorenter.gui.chart.traces.Trace2DSorted;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class Chart extends Chart2D {
 
 	/**
@@ -20,6 +25,10 @@ public class Chart extends Chart2D {
 	private ITrace2D trace;
 	private TreeSet<TracePoint2D> pointTracker;
 
+	/**
+	 * 
+	 * @param numPointsShowing
+	 */
 	public Chart(int numPointsShowing) {
 		super();
 		this.numPointsShowing = numPointsShowing;
@@ -31,28 +40,48 @@ public class Chart extends Chart2D {
 
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public  int getNumPointsShowing() {
 		return this.numPointsShowing;
 	}
 
+	/**
+	 * 
+	 * @param numPointsShowing
+	 */
 	public void setNumPointsShowing(int numPointsShowing) {
 		this.numPointsShowing = numPointsShowing;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public  ITrace2D getTrace() {
 		return trace;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public TreeSet<TracePoint2D> getPointTracker() {
 		return pointTracker;
 	}
 
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public void addPoint(double x, double y) {
 
 		
 		pointTracker.add(new TracePoint2D(x, y));
 		trace.addPoint(new TracePoint2D(x, y));
-		System.out.println("X : " + pointTracker.first().getX() + " Y :"+pointTracker.first().getY());
 
 		if (trace.getSize() == this.numPointsShowing) {
 

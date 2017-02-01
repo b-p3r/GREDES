@@ -14,6 +14,11 @@ import javax.swing.border.TitledBorder;
 import di.uminho.miei.gredes.presentationlayer.structures.IfRowInfo;
 import di.uminho.miei.gredes.presentationlayer.structures.IfTableInfo;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class IfTablePanel extends JPanel {
 
 	/**
