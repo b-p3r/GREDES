@@ -8,6 +8,11 @@ import org.snmp4j.Snmp;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class ResponseThread extends Thread implements ResponseListener {
 
 	/**
@@ -50,27 +55,16 @@ public class ResponseThread extends Thread implements ResponseListener {
 		
 		 };
 		
-		 timer.schedule(task, 0, 1000);
+		 timer.schedule(task, 0, manageHelper.getPolltime());
 		
-		// TODO: Adicionar timer cancel
-//		try {
-//
-//			while (true) {
-//
-//				Thread.sleep(1000);
-//
-//				System.out.println("2 . ###################");
-//
-//				this.manageHelper.bulkOctectsPollingRequest(this);
-//
-//				System.out.println("3 . ###################");
-//
-//			}
-//
-//		} catch (Exception e) {
-//			// TODO:
-//		}
-//		;
+
+	}
+	
+	/**
+	 * 
+	 */
+	public void stopPolling() {
+		this.timer.cancel();
 
 	}
 
@@ -92,5 +86,7 @@ public class ResponseThread extends Thread implements ResponseListener {
 		}
 
 	}
+	
+	
 
 }
