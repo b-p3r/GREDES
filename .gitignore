@@ -88,3 +88,6 @@ local.properties
 *.ctxt
 *.bluej
 .DS_Store
+
+
+.ide*ml
