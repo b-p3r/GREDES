@@ -7,8 +7,16 @@ import javax.swing.SwingWorker;
 import di.uminho.miei.gredes.presentationlayer.components.IfTablePanel;
 import di.uminho.miei.gredes.presentationlayer.structures.IfTableInfo;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class UIUpdateWorker extends SwingWorker<Boolean, IfTableInfo> {
 
+	/**
+	 * 
+	 */
 	private ManagerHelper mHelper;
 	private IfTablePanel ifTablePanel;
 
@@ -47,7 +55,7 @@ public class UIUpdateWorker extends SwingWorker<Boolean, IfTableInfo> {
 	protected void process(List<IfTableInfo> chunks) {
 		IfTableInfo mostRecentDataSet = chunks.get(chunks.size() - 1);
 		try {
-			ifTablePanel.setIfTableInfo(mHelper.getRegistry().first(), mHelper.getStart(),
+			ifTablePanel.setIfTableInfo(mHelper.getRegistry().first(), mHelper.getInitialTime(),
 					mostRecentDataSet.getIfList());
 
 			long start = System.currentTimeMillis();
