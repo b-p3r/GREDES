@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +19,11 @@ import di.uminho.miei.gredes.businesslayer.threads.ResponseThread;
 import di.uminho.miei.gredes.businesslayer.threads.UIUpdateWorker;
 import di.uminho.miei.gredes.presentationlayer.components.IfTablePanel;
 
+/**
+ * 
+ * @author bpereira
+ *
+ */
 public class MainWindow {
 
 	private JFrame frame;
@@ -64,9 +70,9 @@ public class MainWindow {
 				try {
 
 					managerHelper.numberInterfacesPolling();
+					managerHelper.calcMaxPoll();
+					System.out.println("POLLTIME: "+ managerHelper.getPolltime());
 
-					//TODO: Adiciona código para cálculo do tempo de polling
-					Thread.sleep(10000);
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -83,9 +89,20 @@ public class MainWindow {
 		EventQueue.invokeAndWait(new Runnable() {
 			public void run() {
 				try {
-					System.out.println("2" + Thread.currentThread());
-					MainWindow window = new MainWindow(50);
+					MainWindow window = new MainWindow(100);
 					window.frame.setVisible(true);
+					frame.addWindowListener(new WindowAdapter() {
+					    @Override
+					    public void windowClosing(WindowEvent windowEvent) {
+					    	MainWindow.pollthread.stopPolling();
+					    	try {
+								MainWindow.managerHelper.stop();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+							}
+					       
+					    }
+					});
 					MainWindow.pollthread.start();
 
 				} catch (Exception e) {
@@ -94,10 +111,14 @@ public class MainWindow {
 
 			}
 		});
+		
+		
 
 		UIUpdateWorker uiUpdateWorker = new UIUpdateWorker(managerHelper, ifTablePanel);
 		uiUpdateWorker.execute();
 	}
+	
+	
 
 	/**
 	 * Create the application.
@@ -142,7 +163,7 @@ public class MainWindow {
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 0;
 		frame.getContentPane().add(scrollPane, gbc_scrollPane);
-		ifTablePanel = new IfTablePanel(numberShowingsPoints, managerHelper.getIfNumberInt());
+		ifTablePanel = new IfTablePanel(numberShowingsPoints, managerHelper.getInterfacesTotalNumber());
 
 		scrollPane.setViewportView(ifTablePanel);
 		GridBagLayout gridBagLayout_1 = (GridBagLayout) ifTablePanel.getLayout();
