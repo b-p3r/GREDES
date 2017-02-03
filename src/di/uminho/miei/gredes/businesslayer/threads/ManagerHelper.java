@@ -6,7 +6,6 @@ import java.util.Vector;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.VariableBinding;
 
 import di.uminho.miei.gredes.businesslayer.snmp.Monitor;
@@ -115,43 +114,11 @@ public class ManagerHelper {
 	 */
 	public void bulkOctectsPollingResponse(ResponseEvent event) throws IOException, InterruptedException {
 
-		IfTableInfo table = monitor.getAsTableBulkAssynchronous(1, this.interfacesTotalNumber, event);
+		IfTableInfo table = monitor.getAsTableBulkAssynchronous(event);
 		System.out.println("Received response PDU is: " + table.toString());
 
 		registry.add(table.clone());
 
-	}
-
-	public void calcMaxPoll() throws IOException, InterruptedException {
-		OID queryPoll[] = { new OID(".1.3.6.1.2.1.1.3.0") };
-
-		long previouSysUpTime = this.initialTime;
-		long maxInterval = 0;
-
-		for (int i = 0; i < 5; i++) {
-
-			Thread.sleep(3000);
-
-			Vector<? extends VariableBinding> queryRes = monitor.getAsVarSynchronous(queryPoll);
-
-			long sysuptime = queryRes.get(0).getVariable().toLong();
-			
-
-			if (previouSysUpTime != sysuptime) {
-
-			if ((sysuptime - previouSysUpTime) > maxInterval) {
-				maxInterval = (sysuptime - previouSysUpTime);
-
-			}
-			
-			
-			previouSysUpTime = sysuptime;
-
-		}
-
-		 }
-
-		 setPolltime(new TimeTicks(maxInterval).toMilliseconds());
 	}
 
 	/**
