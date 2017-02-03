@@ -113,7 +113,7 @@ public class Monitor {
 
 	
 
-	public IfTableInfo getAsTableBulkAssynchronous(int nonRepeaters, int maxRepetitions, ResponseEvent event) {
+	public IfTableInfo getAsTableBulkAssynchronous(ResponseEvent event) {
 
 		IfTableInfo ifTableInfo = new IfTableInfo();
 		ArrayList<IfRowInfo> tmp = new ArrayList<>();
@@ -121,9 +121,11 @@ public class Monitor {
 		
 
 		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
-		System.out.println("EVENT :" + event);
+		int maxRepetitions = event.getRequest().getMaxRepetitions();
+
 		ifTableInfo.setSysUptime(var.get(SYSUPTIME).getVariable().toLong());
 
+		
 		for (int j = 0; j < (maxRepetitions * TOTALCOLUMNS); j += TOTALCOLUMNS) {
 
 			int index = var.get(IFINDEX + j).getVariable().toInt();
