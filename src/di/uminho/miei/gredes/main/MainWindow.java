@@ -14,6 +14,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import java.util.*;
+
+
 import di.uminho.miei.gredes.businesslayer.threads.ManagerHelper;
 import di.uminho.miei.gredes.businesslayer.threads.ResponseThread;
 import di.uminho.miei.gredes.businesslayer.threads.UIUpdateWorker;
@@ -55,6 +58,7 @@ public class MainWindow {
 		frame.setVisible(true);
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		textField.setText("Loading...");
+		
 		managerHelper = new ManagerHelper("udp:127.0.0.1/161");
 		managerHelper.preparePolling();
 
@@ -65,13 +69,15 @@ public class MainWindow {
 		 */
 		SwingUtilities.invokeAndWait(new Runnable() {
 
+			
+
 			@Override
 			public void run() {
 				try {
 
 					managerHelper.numberInterfacesPolling();
-					managerHelper.calcMaxPoll();
-					System.out.println("POLLTIME: "+ managerHelper.getPolltime());
+				   				
+					managerHelper.setPolltime(3010);
 
 
 				} catch (Exception e) {
