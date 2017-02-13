@@ -14,11 +14,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import java.util.*;
-
-
 import di.uminho.miei.gredes.businesslayer.threads.ManagerHelper;
-import di.uminho.miei.gredes.businesslayer.threads.ResponseThread;
+import di.uminho.miei.gredes.businesslayer.threads.ResponseRequestThread;
 import di.uminho.miei.gredes.businesslayer.threads.UIUpdateWorker;
 import di.uminho.miei.gredes.presentationlayer.components.IfTablePanel;
 
@@ -31,7 +28,7 @@ public class MainWindow {
 
 	private JFrame frame;
 
-	private static ResponseThread pollthread;
+	private static ResponseRequestThread pollthread;
 
 	private static ManagerHelper managerHelper;
 
@@ -62,7 +59,7 @@ public class MainWindow {
 		managerHelper = new ManagerHelper("udp:127.0.0.1/161");
 		managerHelper.preparePolling();
 
-		pollthread = new ResponseThread(managerHelper);
+		pollthread = new ResponseRequestThread(managerHelper);
 
 		/**
 		 * 
@@ -104,7 +101,7 @@ public class MainWindow {
 					    	try {
 								MainWindow.managerHelper.stop();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
+								
 							}
 					       
 					    }

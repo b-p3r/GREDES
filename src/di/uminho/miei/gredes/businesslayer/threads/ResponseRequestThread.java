@@ -13,7 +13,7 @@ import org.snmp4j.event.ResponseListener;
  * @author bpereira
  *
  */
-public class ResponseThread extends Thread implements ResponseListener {
+public class ResponseRequestThread extends Thread implements ResponseListener {
 
 	/**
 	 * 
@@ -26,7 +26,7 @@ public class ResponseThread extends Thread implements ResponseListener {
 	 * 
 	 * @param managerHelper
 	 */
-	public ResponseThread(ManagerHelper managerHelper) {
+	public ResponseRequestThread(ManagerHelper managerHelper) {
 		super();
 		this.manageHelper = managerHelper;
 
@@ -40,26 +40,25 @@ public class ResponseThread extends Thread implements ResponseListener {
 	@Override
 	public void run() {
 
-		 timer = new Timer(true);
-		
-		 task = new TimerTask() {
-		
-		 @Override
-		 public void run() {
-		 try {
-		 ResponseThread.this.manageHelper.bulkOctectsPollingRequest(ResponseThread.this);
-		 } catch (Exception e) {
-		 // //TODO:
-		 }
-		 }
-		
-		 };
-		
-		 timer.schedule(task, 0, manageHelper.getPolltime());
-		
+		timer = new Timer(true);
+
+		task = new TimerTask() {
+
+			@Override
+			public void run() {
+				try {
+					ResponseRequestThread.this.manageHelper.bulkOctectsPollingRequest(ResponseRequestThread.this);
+				} catch (Exception e) {
+
+				}
+			}
+
+		};
+
+		timer.schedule(task, 0, manageHelper.getPolltime());
 
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -81,12 +80,9 @@ public class ResponseThread extends Thread implements ResponseListener {
 		try {
 			manageHelper.bulkOctectsPollingResponse(event);
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
 
 		}
 
 	}
-	
-	
 
 }
