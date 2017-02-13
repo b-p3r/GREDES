@@ -43,6 +43,18 @@ public class MainWindow {
 	 */
 	public static void main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
 
+		String ipadress = null;
+		String port = null;
+		if (args.length == 0) {
+			ipadress = "127.0.0.1";
+			port = "161";
+		} else if (args.length == 1&&args[1]==null){
+			port = "161";
+		}else{
+			ipadress = args[0];
+			port =args[1];
+		}
+			
 		/** Janela de aviso de carregamento **/
 		JFrame frame = new JFrame();
 		JTextField textField = new JTextField(40);
@@ -56,7 +68,7 @@ public class MainWindow {
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		textField.setText("Loading...");
 		
-		managerHelper = new ManagerHelper("udp:127.0.0.1/161");
+		managerHelper = new ManagerHelper("udp:"+ipadress+"/"+port);
 		managerHelper.preparePolling();
 
 		pollthread = new ResponseRequestThread(managerHelper);
