@@ -67,42 +67,13 @@ public class Monitor {
 		transport.listen();
 	}
 
-	public String getAsString(OID oid) throws IOException {
-		ResponseEvent event = get(getPDUGet(new OID[] { oid }));
-		return event.getResponse().get(0).getVariable().toString();
-	}
+
 
 	public Vector<? extends VariableBinding> getAsVarSynchronous(OID oid[]) throws IOException {
 		ResponseEvent event = get(getPDUGet(oid));
 		return event.getResponse().getVariableBindings();
 	}
 
-	public IfTableInfo getAsStringBulk(OID[] oid, int nonRepeaters, int maxRepetitions) throws IOException {
-		ResponseEvent event = get(getPDUGetBulk(oid, nonRepeaters, maxRepetitions));
-
-		IfTableInfo ifTableInfo = new IfTableInfo();
-		ArrayList<IfRowInfo> tmp = new ArrayList<>();
-
-		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
-		ifTableInfo.setSysUptime(var.get(SYSUPTIME).getVariable().toLong());
-
-		for (int j = 0; j < (maxRepetitions * TOTALCOLUMNS); j += TOTALCOLUMNS) {
-
-			int index = var.get(IFINDEX + j).getVariable().toInt();
-			String descr = var.get(IFDESCR + j).getVariable().toString();
-			int status = var.get(IFOPSTATUS + j).getVariable().toInt();
-
-			long inOctets = var.get(IFINOCTETS + j).getVariable().toLong();
-			long outOctets = var.get(IFOUTOCTETS + j).getVariable().toLong();
-			IfRowInfo tmprow = new IfRowInfo(index, descr, status, inOctets, outOctets);
-			tmp.add(tmprow);
-
-		}
-
-		ifTableInfo.setIfList(tmp);
-
-		return ifTableInfo;
-	}
 
 	public void sendBulkAssynchronous(OID[] oid, int nonRepeaters, int maxRepetitions, ResponseListener listener)
 			throws IOException {
@@ -111,15 +82,11 @@ public class Monitor {
 
 	}
 
-	
-
 	public IfTableInfo getAsTableBulkAssynchronous(ResponseEvent event) {
 
 		IfTableInfo ifTableInfo = new IfTableInfo();
 		ArrayList<IfRowInfo> tmp = new ArrayList<>();
-		
-		
-
+			
 		Vector<? extends VariableBinding> var = event.getResponse().getVariableBindings();
 		int maxRepetitions = event.getRequest().getMaxRepetitions();
 
